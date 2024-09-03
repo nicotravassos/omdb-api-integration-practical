@@ -11,6 +11,8 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
+    @livewireScripts
 </head>
 <body class="font-sans antialiased dark:bg-black dark:text-white/50">
 {{ $slot }}
