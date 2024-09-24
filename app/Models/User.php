@@ -46,6 +46,7 @@ use Illuminate\Support\Carbon;
  */
 class User extends Authenticatable
 {
+    /** @use HasFactory<UserFactory> */
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
