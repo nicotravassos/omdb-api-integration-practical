@@ -81,6 +81,16 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
+     * Determine if the user requires email verification.
+     *
+     * @return bool
+     */
+    public function requiresEmailVerification(): bool
+    {
+        return true;
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
