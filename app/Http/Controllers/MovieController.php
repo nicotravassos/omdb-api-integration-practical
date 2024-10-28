@@ -36,15 +36,21 @@ class MovieController extends Controller
      */
     public function search(Request $request): View|Application|Factory|RedirectResponse
     {
-        $query = $request->input('query');
-        $movies = $this->movieService->searchMovies($query);
+        $query = $request->query('query');
 
-        if ($movies) {
-            return view('movies.search', compact('movies'));
+        if ($query) {
+            $movies = $this->movieService->searchMovies($query);
+
+            if ($movies && isset($movies['Search'])) {
+                return view('movies.search', compact('movies'));
+            }
+
+            return back()->withErrors(['error' => 'Unable to fetch data']);
         }
 
-        return back()->withErrors(['error' => 'Unable to fetch data']);
+        return view('movies.search');
     }
+
 
     /**
      * Display the details of a specific movie by its IMDb ID.

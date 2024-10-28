@@ -111,7 +111,13 @@ class MovieService
      */
     public function getMovieDetails(string $id): ?array
     {
-        return $this->makeApiRequest(['i' => $id]);
+        $response = $this->makeApiRequest(['i' => $id]);
+
+        if (isset($response['Error'])) {
+            return null;
+        }
+
+        return $response;
     }
 
     /**
