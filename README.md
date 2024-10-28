@@ -9,6 +9,7 @@ Before setting up the application, ensure you have the following installed on yo
 - **PHP** (version 8.0 or later)
 - **Composer**
 - **MySQL** (or any database supported by Laravel)
+- **Node.js** and npm (for using Vite with Tailwind CSS)
 
 ### Installation Steps
 
@@ -59,7 +60,16 @@ Run database migrations to set up the necessary tables:
 php artisan migrate
 ```
 
-#### 5. Run the Application
+#### 5. Install Frontend Dependencies and Build Assets
+
+Make sure you have Node.js installed, then run:
+
+```bash
+npm install
+npm run dev
+```
+
+#### 6. Run the Application
 
 Start the Laravel development server using:
 
