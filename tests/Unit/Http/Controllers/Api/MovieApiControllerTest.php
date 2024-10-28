@@ -3,6 +3,7 @@
 namespace Tests\Unit\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\MovieApiController;
+use App\Models\TrendingMovie;
 use App\Services\MovieService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,12 +26,13 @@ class MovieApiControllerTest extends TestCase
         });
 
         $controller = new MovieApiController($movieService);
-        $request = Request::create('/search', 'GET', ['query' => 'inception']);
+        $request = Request::create('/api/search', 'GET', ['query' => 'inception']);
         $response = $controller->search($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertArrayHasKey('Search', $response->getData(true));
+        $this->assertArrayHasKey(0, $response->getData(true));
+        $this->assertEquals('Inception', $response->getData(true)[0]['Title']);
     }
 
     /**
@@ -40,7 +42,7 @@ class MovieApiControllerTest extends TestCase
     {
         $movieService = Mockery::mock(MovieService::class);
         $controller = new MovieApiController($movieService);
-        $request = Request::create('/search', 'GET', []);
+        $request = Request::create('/api/search', 'GET', []);
 
         $response = $controller->search($request);
 
@@ -62,12 +64,12 @@ class MovieApiControllerTest extends TestCase
         });
 
         $controller = new MovieApiController($movieService);
-        $request = Request::create('/search', 'GET', ['query' => 'unknown']);
+        $request = Request::create('/api/search', 'GET', ['query' => 'unknown']);
         $response = $controller->search($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertEquals('Unable to fetch data', $response->getData(true)['error']);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Unable to fetch data or no movies found', $response->getData(true)['error']);
     }
 
     /**
@@ -88,6 +90,7 @@ class MovieApiControllerTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertArrayHasKey('Title', $response->getData(true));
+        $this->assertEquals('Inception', $response->getData(true)['Title']);
     }
 
     /**
@@ -106,8 +109,8 @@ class MovieApiControllerTest extends TestCase
         $response = $controller->details('invalid_id');
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(500, $response->getStatusCode());
-        $this->assertEquals('Unable to fetch data', $response->getData(true)['error']);
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('Unable to fetch data or movie not found', $response->getData(true)['error']);
     }
 
     /**
@@ -118,7 +121,7 @@ class MovieApiControllerTest extends TestCase
         $movieService = Mockery::mock(MovieService::class, function (MockInterface $mock) {
             $mock->shouldReceive('getTrendingMovies')
                 ->once()
-                ->andReturn(\App\Models\TrendingMovie::factory()->count(3)->make());
+                ->andReturn(TrendingMovie::factory()->count(3)->make());
         });
 
         $controller = new MovieApiController($movieService);
@@ -128,5 +131,6 @@ class MovieApiControllerTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertIsArray($response->getData(true));
         $this->assertNotEmpty($response->getData(true));
+        $this->assertCount(3, $response->getData(true));
     }
 }

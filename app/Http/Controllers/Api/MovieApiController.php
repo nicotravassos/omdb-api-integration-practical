@@ -32,11 +32,11 @@ class MovieApiController extends Controller
 
         $movies = $this->movieService->searchMovies($query);
 
-        if ($movies) {
-            return response()->json($movies);
+        if ($movies && isset($movies['Search'])) {
+            return response()->json($movies['Search'], 200);
         }
 
-        return response()->json(['error' => 'Unable to fetch data'], 500);
+        return response()->json(['error' => 'Unable to fetch data or no movies found'], 404);
     }
 
     /**
@@ -50,10 +50,10 @@ class MovieApiController extends Controller
         $movie = $this->movieService->getMovieDetails($id);
 
         if ($movie) {
-            return response()->json($movie);
+            return response()->json($movie, 200);
         }
 
-        return response()->json(['error' => 'Unable to fetch data'], 500);
+        return response()->json(['error' => 'Unable to fetch data or movie not found'], 404);
     }
 
     /**
@@ -65,6 +65,10 @@ class MovieApiController extends Controller
     {
         $trendingMovies = $this->movieService->getTrendingMovies();
 
-        return response()->json($trendingMovies);
+        if ($trendingMovies->isEmpty()) {
+            return response()->json(['error' => 'No trending movies found'], 404);
+        }
+
+        return response()->json($trendingMovies, 200);
     }
 }
